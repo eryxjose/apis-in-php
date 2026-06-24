@@ -1,0 +1,50 @@
+services:
+  php:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: php_mariadb_demo_app
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${APP_PORT}:80"
+    volumes:
+      - ./app/public:/var/www/html
+    depends_on:
+      - mariadb
+    networks:
+      - php_mariadb_demo_net
+
+  mariadb:
+    image: mariadb:11.4
+    container_name: php_mariadb_demo_db
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${DB_PORT}:3306"
+    environment:
+      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
+      MARIADB_DATABASE: ${MARIADB_DATABASE}
+      MARIADB_USER: ${MARIADB_USER}
+      MARIADB_PASSWORD: ${MARIADB_PASSWORD}
+    volumes:
+      - mariadb_data:/var/lib/mysql
+      - ./infra/mariadb/init:/docker-entrypoint-initdb.d:ro
+    networks:
+      - php_mariadb_demo_net
+
+  adminer:
+    image: adminer:latest
+    container_name: php_mariadb_demo_adminer
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8083:8080"
+    depends_on:
+      - mariadb
+    networks:
+      - php_mariadb_demo_net
+
+volumes:
+  mariadb_data:
+
+networks:
+  php_mariadb_demo_net:
+    driver: bridge
