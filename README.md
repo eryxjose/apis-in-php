@@ -11,6 +11,7 @@ Gerenciador de pacotes https://getcomposer.org/
 
 ### httpie
 
+Docs: https://httpie.io/docs/cli/request-url
 
 ```bash
 # Install httpie
@@ -18,6 +19,9 @@ curl -SsL https://packages.httpie.io/deb/KEY.gpg | sudo gpg --dearmor -o /usr/sh
 echo "deb [arch=amd64 signed-by=/usr/share/keyrings/httpie.gpg] https://packages.httpie.io/deb ./" | sudo tee /etc/apt/sources.list.d/httpie.list > /dev/null
 sudo apt update
 sudo apt install httpie
+
+# Upgrade httpie
+sudo apt update && sudo apt upgrade httpie
 
 ```
 
@@ -75,5 +79,5 @@ https://www.php.net/manual/en/function.json-decode.php
 https://docs.guzzlephp.org/en/stable/overview.html
 https://docs.guzzlephp.org/en/stable/
 https://www.php.net/manual/en/book.curl.php
-
+https://www.php.net/manual/en/function.var-dump.php
 

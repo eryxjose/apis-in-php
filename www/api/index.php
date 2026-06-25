@@ -4,7 +4,11 @@ declare(strict_types=1);
 
 require dirname(__DIR__) . "/vendor/autoload.php";
 
+set_error_handler("ErrorHandler::handleError");
 set_exception_handler("ErrorHandler::handleException");
+
+$dotenv = Dotenv\Dotenv::createImmutable(dirname(__DIR__));
+$dotenv->load();
 
 $path = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
 
@@ -21,10 +25,12 @@ if ($resource != "tasks") {
 
 handler("Content-Type: application/json; charset=UTF-8");
 
-$database = new Database("localhost", "apidb", "appuser", "change_me");
+$database = new Database($_ENV["MARIADB_HOST"], $_ENV["MARIADB_DATABASE"], $_ENV["MARIADB_USER"], $_ENV["MARIADB_PASSWORD"]);
 
-$database->getConnection();
+// $database->getConnection();
 
-$controller = new TaskController;
+$task_gateway = new TaskGateway($database);
+
+$controller = new TaskController($task_gateway);
 
 $controller->processRequest($_SERVER["REQUEST_METHOD"], $id);
