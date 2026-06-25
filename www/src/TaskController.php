@@ -27,7 +27,7 @@ class TaskController
                     $this->respondUnprocessableEntity($errors);
 
                     return; 
-                    
+
                 }
 
                 $id = $this->gateway->create($data);
@@ -53,15 +53,36 @@ class TaskController
             switch ($method) {
 
                 case "GET":
+                    
                     echo json_encode($task);
                     break;
 
                 case "PATCH":
-                    echo "update ${id}";
+
+                    $data = (array) json_encode(file_get_content("php://input"), true);
+
+                    $errors = $this->getValidationErrors($data, false);
+
+                    if (!empty($errors)) {
+
+                        $this->respondUnprocessableEntity($errors);
+
+                        return; 
+
+                    }
+
+                    $rows = $this->gateway->update($id, $data);
+
+                    echo json_encode(["message" => "Task updated", "rows" => $rows]);
+
                     break;
 
                 case "DELETE":
-                    echo "delete ${id}";
+                    
+                    $rows = $this->gateway->delete($id);
+
+                    echo json_encode(["message" => "Task deleted", "rows" => $rows]);
+
                     break;
 
                 default:
@@ -97,6 +118,19 @@ class TaskController
 
     }
 
+    public function delete(string $id)
+    {
+        $sql = "";
+
+        $stmt = $this->conn->prepare($sql);
+
+        $stmt->bindValue(":id", $id, PDO::PARAM_INT);
+
+        $stmt->execute();
+
+        return $stmt->rowCount();
+    }
+
     private function respondUnprocessableEntity(array $errors): void 
     {
         http_response_code(422);
@@ -121,11 +155,11 @@ class TaskController
         echo json_encode(["message" => "Task created", "id" => $id]);
     }
 
-    private function getValidationErrors(array $data): void 
+    private function getValidationErrors(array $data, bool $is_new = true): array
     {
         $errors = [];
 
-        if (empty($data["name"])) {
+        if (is_true && empty($data["name"])) {
             
             $errors[] = "name is required";
 
@@ -140,8 +174,7 @@ class TaskController
             }
         }
 
-
-
+        return $errors;
     }
 
 }
