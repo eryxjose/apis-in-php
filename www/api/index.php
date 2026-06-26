@@ -21,13 +21,26 @@ $database = new Database($_ENV["MARIADB_HOST"], $_ENV["MARIADB_DATABASE"], $_ENV
 
 $user_gateway = new UserGateway($database);
 
+
+// $headers = apache_request_headers();
+
+// echo $headers["Authorization"];
+
 $auth = new Auth($user_gateway);
 
-if (! $auth->authenticateAPIKey()) {
+// if (! $auth->authenticateAPIKey()) {
+//     exit;
+// }
+
+if (! $auth->authenticateAccessToken()) {
     exit;
 }
 
+
 $user_id = $auth->getUserID();
+
+
+
 
 // $database->getConnection();
 
