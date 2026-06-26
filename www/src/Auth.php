@@ -4,7 +4,7 @@ class Auth
 {
     private int $user_id;
 
-    public function __construct(private UserGateway $user_gateway) 
+    public function __construct(private UserGateway $user_gateway, private JWTCodec $codec) 
     {
     }
 
@@ -58,13 +58,36 @@ class Auth
             return false;
         }
 
-        $data = json_decode($plain_text, true);
+        // $data = json_decode($plain_text, true);
+        try {
+            
+            $data = $this->codec->decode($matches[1]);
 
-        if ($data === null) {
+        } catch (TokenExpireException) {
+
+            http_response_code(401);
+            echo json_encode(["message" => "Token has expired"]);
+            return false;
+
+        } catch (InvalidSignatureException) {
+            
             http_response_code(400);
-            echo json_encode(["message" => "invalid token"]);
-            exit;
+            echo json_encode(["message" => "Invalid signature"]);
+            return false;
+
+        } catch (Exception $e) {
+
+            http_response_code(400);
+            echo json_encode(["message" => e->getMessage()]);
+            return false;
+
         }
+
+        // if ($data === null) {
+        //     http_response_code(400);
+        //     echo json_encode(["message" => "invalid token"]);
+        //     exit;
+        // }
 
         $this->user_id = $data["id"];
 

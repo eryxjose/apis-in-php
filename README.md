@@ -81,4 +81,8 @@ https://docs.guzzlephp.org/en/stable/
 https://www.php.net/manual/en/book.curl.php
 https://www.php.net/manual/en/function.var-dump.php
 https://picocss.com/docs
+https://docs.github.com/en/rest/using-the-rest-api/getting-started-with-the-rest-api?apiVersion=2026-03-10
+https://randomuser.me/
+https://www.php.net/manual/en/function.password-hash.php
+https://www.iana.org/assignments/jwt/jwt.xhtml
 
